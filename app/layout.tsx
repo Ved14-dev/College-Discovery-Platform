@@ -4,6 +4,8 @@ import "./globals.css";
 import { CompareProvider } from "@/context/CompareContext";
 import CompareTray from "@/components/compare/CompareTray";
 
+import ShortlistCount from "@/components/ui/ShortlistCount";
+
 export const metadata: Metadata = {
   title: "EduQuest | College Discovery Platform",
   description: "Find and compare the best colleges with NIRF-verified rankings, live fee data, and AI-powered admission prediction.",
@@ -38,12 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 >
                   Explore Colleges
                 </Link>
-                <Link
-                  href="/compare"
-                  className="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-all"
-                >
-                  Comparison
-                </Link>
+                <ShortlistCount />
                 <Link
                   href="/predictor"
                   className="ml-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:opacity-90 transition-opacity shadow-md shadow-blue-500/25"

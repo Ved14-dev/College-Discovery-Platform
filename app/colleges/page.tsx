@@ -20,7 +20,13 @@ export default function CollegeDirectory() {
       try {
         let query = supabase.from('colleges').select('*').order('rank', { ascending: true });
         if (searchTerm) {
-          query = query.or(`name.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%`);
+          let searchOr = `name.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%`;
+          if (searchTerm.toLowerCase().includes('iit')) {
+            searchOr += `,name.ilike.%Indian Institute of Technology%`;
+          } else if (searchTerm.toLowerCase().includes('nit')) {
+            searchOr += `,name.ilike.%National Institute of Technology%`;
+          }
+          query = query.or(searchOr);
         }
         const { data, error } = await query;
         if (error) { setColleges([]); } 
@@ -75,7 +81,17 @@ export default function CollegeDirectory() {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="bg-slate-100 rounded-2xl h-72 animate-pulse" />
+              <div key={i} className="border border-slate-200 rounded-2xl bg-white shadow-sm h-72 flex flex-col overflow-hidden">
+                <div className="h-44 bg-slate-200 animate-pulse w-full" />
+                <div className="p-5 flex flex-col flex-grow gap-3">
+                  <div className="h-5 bg-slate-200 rounded animate-pulse w-3/4" />
+                  <div className="h-3 bg-slate-200 rounded animate-pulse w-1/2" />
+                  <div className="mt-auto flex justify-between">
+                    <div className="h-4 bg-slate-200 rounded animate-pulse w-1/3" />
+                    <div className="w-9 h-9 bg-slate-200 rounded-xl animate-pulse" />
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         ) : colleges.length > 0 ? (
@@ -92,9 +108,16 @@ export default function CollegeDirectory() {
           </>
         ) : (
           <div className="text-center py-24 max-w-md mx-auto">
-            <div className="text-6xl mb-6">🔍</div>
-            <h3 className="text-2xl font-bold text-slate-800 mb-2">No results found</h3>
-            <p className="text-slate-500 mb-8">No colleges match "{search}". Try broader terms like a city name.</p>
+            <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-6 shadow-sm border border-blue-200">
+              👩‍💼
+            </div>
+            <h3 className="text-2xl font-bold text-slate-800 mb-2">Consultant Message</h3>
+            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 relative mb-8">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 bg-slate-50 border-t border-l border-slate-100 rotate-45"></div>
+              <p className="text-slate-600 font-medium italic">
+                "We couldn't find a match for those scores in Mumbai, but here are 3 colleges in Pune that fit your profile."
+              </p>
+            </div>
             <button
               onClick={() => setSearch('')}
               className="px-8 py-4 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/25"

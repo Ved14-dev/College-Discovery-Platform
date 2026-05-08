@@ -2,12 +2,20 @@
 
 EduQuest is a production-grade platform helping students discover, compare, and predict their admission chances for top Indian engineering and science institutions. Built with Next.js 15, Supabase, and a weighted AI probability model.
 
+Live URL: https://college-discovery-platform-jade.vercel.app/
+
+Repository: https://github.com/Ved14-dev/College-Discovery-Platform
+
 ## Core Features
 
 - **Smart College Directory** — Real-time search across top institutions by name, city, or keyword with debounced Supabase queries
 - **Multi-Factor AI Predictor** — Admission probability engine factoring entrance scores, reservation categories (General/OBC/SC/ST), and branch preferences (CS/IT/Core)
 - **Technical Comparison** — Side-by-side analysis of NIRF rank, annual fees, location, and admission cutoffs for up to 3 colleges
 - **Verified Data** — Powered by Supabase with NIRF 2024-aligned rankings and realistic fee structures
+- **Optimized Search** — Full-text search across institutions with debounced Supabase queries to minimize network overhead and provide instant feedback
+- **Derived Data Layer** — ROI and Eligibility states are calculated on-the-fly, demonstrating efficient client-side data transformation
+- **UX Persistence** — The comparison tray utilizes a combination of React Context and LocalStorage, ensuring user selections survive browser refreshes
+- **Deterministic Probability Model** — The admission predictor uses a weighted mathematical model locally, ensuring immediate response times without external API latency
 
 ## Tech Stack
 
@@ -56,3 +64,5 @@ For Vercel deployment, add these in **Project Settings → Environment Variables
 - `app/colleges/page.tsx` — Client-side search with `.or()` / `.ilike()` Supabase queries
 - `app/predictor/page.tsx` — Deterministic probability model (no external API calls)
 - `next.config.ts` — `ignoreBuildErrors: true` for clean Vercel builds; `remotePatterns` allows all HTTPS image sources
+
+

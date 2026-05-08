@@ -6,57 +6,66 @@ import { supabase } from '@/lib/supabase';
 type Category = 'General' | 'OBC' | 'SC' | 'ST';
 type Branch = 'CS' | 'IT' | 'Core' | 'Other';
 
+import { motion } from 'framer-motion';
+
 interface Result {
   name: string;
   rank: number;
   cutoff_score: number;
   effectiveCutoff: number;
   chance: number;
+  mopUpChance: number;
+  categoryInsight: string;
   tier: 'high' | 'medium' | 'low';
   breakdown: string;
 }
 
 function computeChance(score: number, rawCutoff: number, category: Category, branch: Branch): Omit<Result, 'name' | 'rank' | 'cutoff_score'> {
-  // Step 1: Adjust effective cutoff by category reservation
-  let effectiveCutoff = rawCutoff;
-  if (category === 'SC' || category === 'ST') effectiveCutoff = rawCutoff * 0.85;
-  else if (category === 'OBC') effectiveCutoff = rawCutoff * 0.95;
+  let effectiveScore = score;
+  let multiplier = 1.0;
+  
+  if (category === 'SC' || category === 'ST') multiplier = 1.15;
+  else if (category === 'OBC') multiplier = 1.05;
 
-  // Step 2: Adjust for branch difficulty
-  if (branch === 'CS' || branch === 'IT') effectiveCutoff = effectiveCutoff * 1.03;
+  effectiveScore *= multiplier;
 
-  const ec = parseFloat(effectiveCutoff.toFixed(1));
-  const ratio = score / ec;
+  if (branch === 'CS' || branch === 'IT') effectiveScore *= 0.97;
+  
+  if (effectiveScore > 100) effectiveScore = 100;
 
-  // Step 3: Map ratio to probability band
-  let chance: number;
-  if (ratio >= 1.06) chance = 96;
-  else if (ratio >= 1.02) chance = 87;
-  else if (ratio >= 0.98) chance = 60;
-  else if (ratio >= 0.93) chance = 28;
-  else if (ratio >= 0.88) chance = 12;
-  else chance = 4;
+  const ratio = effectiveScore / rawCutoff;
+  
+  let chance = Math.round(ratio * 90); 
+  if (chance > 100) chance = 100;
+  if (chance < 0) chance = 0;
 
-  const tier: 'high' | 'medium' | 'low' = chance > 80 ? 'high' : chance > 45 ? 'medium' : 'low';
+  let mopUpChance = chance + 12;
+  if (mopUpChance > 100) mopUpChance = 100;
 
-  // Step 4: Build plain-text breakdown (no emojis per spec)
-  const reservationText =
-    category !== 'General'
-      ? ` ${category} reservation reduces effective cutoff to ${ec}% (from ${rawCutoff}%).`
-      : '';
-  const branchText =
-    branch === 'CS' || branch === 'IT'
-      ? ` ${branch} branch adds 3% difficulty to the adjusted cutoff.`
-      : '';
-  const breakdown = `Your score of ${score}% vs effective cutoff of ${ec}%.${reservationText}${branchText} Score-to-cutoff ratio: ${(ratio * 100).toFixed(1)}%.`;
+  let tier: 'high' | 'medium' | 'low';
+  if (chance > 85) tier = 'high';
+  else if (chance >= 60) tier = 'medium';
+  else tier = 'low';
 
-  return { effectiveCutoff: ec, chance, tier, breakdown };
+  const reservationText = category !== 'General' ? ` Applied ${category} multiplier (${multiplier}x).` : '';
+  const branchText = (branch === 'CS' || branch === 'IT') ? ` CS/IT branch penalty applied.` : '';
+  
+  const breakdown = `Base score: ${score}%.${reservationText}${branchText} Effective score: ${effectiveScore.toFixed(1)}% vs Cutoff: ${rawCutoff}%.`;
+
+  let categoryInsight = '';
+  if (category !== 'General') {
+    categoryInsight = `In the ${category} category, your chances increase by ${((multiplier - 1) * 100).toFixed(0)}% based on 2025 trends.`;
+  } else {
+    categoryInsight = `General category scores require strict adherence to Phase 1 cutoffs.`;
+  }
+
+  return { effectiveCutoff: rawCutoff, chance, mopUpChance, categoryInsight, tier, breakdown };
 }
 
 const tierConfig = {
-  high:   { label: 'High Probability',   bar: 'bg-emerald-500', badge: 'bg-emerald-100 text-emerald-800', value: 'text-emerald-700' },
-  medium: { label: 'Good Probability',   bar: 'bg-amber-400',   badge: 'bg-amber-100 text-amber-800',     value: 'text-amber-700'   },
-  low:    { label: 'Low Probability',    bar: 'bg-rose-400',    badge: 'bg-rose-100 text-rose-800',       value: 'text-rose-700'    },
+  high:   { label: 'Safe Bet',   bar: 'bg-emerald-500', badge: 'bg-emerald-100 text-emerald-800', value: 'text-emerald-700' },
+  medium: { label: 'Target',   bar: 'bg-amber-400',   badge: 'bg-amber-100 text-amber-800',     value: 'text-amber-700'   },
+  low:    { label: 'Reach/Dream',    bar: 'bg-rose-400',    badge: 'bg-rose-100 text-rose-800',       value: 'text-rose-700'    },
 };
 
 export default function AIPredictor() {
@@ -156,9 +165,9 @@ export default function AIPredictor() {
                   onChange={(e) => setCategory(e.target.value as Category)}
                 >
                   <option value="General">General</option>
-                  <option value="OBC">OBC (Effective cutoff minus 5%)</option>
-                  <option value="SC">SC (Effective cutoff minus 15%)</option>
-                  <option value="ST">ST (Effective cutoff minus 15%)</option>
+                  <option value="OBC">OBC (Score multiplier 1.05x)</option>
+                  <option value="SC">SC (Score multiplier 1.15x)</option>
+                  <option value="ST">ST (Score multiplier 1.15x)</option>
                 </select>
               </div>
 
@@ -193,9 +202,9 @@ export default function AIPredictor() {
               </button>
 
               <div className="pt-3 border-t border-slate-100 text-xs text-slate-400 space-y-1.5">
-                <p>SC/ST reservation: Cutoff reduced by 15%</p>
-                <p>OBC reservation: Cutoff reduced by 5%</p>
-                <p>CS/IT branch: Competition adds 3% difficulty</p>
+                <p>SC/ST reservation: Score multiplier 1.15x</p>
+                <p>OBC reservation: Score multiplier 1.05x</p>
+                <p>CS/IT branch: Competition penalty 0.97x</p>
               </div>
             </div>
           </form>
@@ -250,18 +259,43 @@ export default function AIPredictor() {
                         </span>
                       </div>
 
-                      {/* Probability Gauge */}
-                      <div className="mb-4">
-                        <div className="flex justify-between items-end mb-2">
-                          <span className="text-xs text-slate-400 font-medium">Admission Chance</span>
-                          <span className={`text-2xl font-black ${cfg.value}`}>{r.chance}%</span>
+                      {/* Probability Gauge - Round 1 */}
+                      <div className="mb-3">
+                        <div className="flex justify-between items-end mb-1">
+                          <span className="text-xs text-slate-500 font-medium">Round 1 Strict Probability</span>
+                          <span className={`text-xl font-black ${cfg.value}`}>{r.chance}%</span>
                         </div>
-                        <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                          <div
-                            className={`h-full rounded-full transition-all duration-700 ${cfg.bar}`}
-                            style={{ width: `${r.chance}%` }}
+                        <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${r.chance}%` }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                            className={`h-full rounded-full ${cfg.bar}`}
                           />
                         </div>
+                      </div>
+
+                      {/* Probability Gauge - Mop-Up Round */}
+                      <div className="mb-4">
+                        <div className="flex justify-between items-end mb-1">
+                          <span className="text-xs text-slate-500 font-medium">Mop-Up / Spot Round</span>
+                          <span className={`text-lg font-bold text-slate-700`}>{r.mopUpChance}%</span>
+                        </div>
+                        <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${r.mopUpChance}%` }}
+                            transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
+                            className={`h-full rounded-full bg-slate-400`}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Category Insight */}
+                      <div className="mb-4 bg-blue-50/50 p-3 rounded-xl border border-blue-100/50">
+                        <p className="text-xs text-blue-700 font-medium">
+                          <span className="font-bold">Insight:</span> {r.categoryInsight}
+                        </p>
                       </div>
 
                       {/* Logic Breakdown */}

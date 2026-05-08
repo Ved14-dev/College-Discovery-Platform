@@ -15,6 +15,20 @@ export default function CollegeCard({ college }: { college: any }) {
       ? 'bg-gradient-to-r from-yellow-400 to-amber-500 text-white'
       : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white';
 
+  // Value Score (Vs) Calculation
+  const assumedSalary = college.median_salary || (1500000 - ((college.rank || 10) * 50000));
+  const placementRate = 0.98 - ((college.rank || 10) * 0.005);
+  const nirfInverse = (100 - (college.rank || 10)) / 100;
+  const roiFactor = college.fees ? (assumedSalary / college.fees) : 0;
+  
+  const valueScore = (placementRate * 0.4) + (roiFactor * 0.4) + (nirfInverse * 0.2);
+
+  let valueBadge = '';
+  let valueColor = '';
+  if (valueScore > 2.5) { valueBadge = 'Budget Friendly'; valueColor = 'bg-emerald-100 text-emerald-800'; }
+  else if (valueScore > 1.5) { valueBadge = 'Balanced Value'; valueColor = 'bg-blue-100 text-blue-800'; }
+  else { valueBadge = 'High Investment'; valueColor = 'bg-amber-100 text-amber-800'; }
+
   // Indian Rupee formatting
   const formattedFees = college.fees
     ? new Intl.NumberFormat('en-IN', {
@@ -45,6 +59,13 @@ export default function CollegeCard({ college }: { college: any }) {
           className={`absolute top-3 left-3 text-xs font-black px-3 py-1 rounded-full shadow-lg ${rankBadgeClass}`}
         >
           #{college.rank || 'N/A'}
+        </span>
+        
+        {/* Value Badge */}
+        <span
+          className={`absolute top-3 right-3 text-xs font-black px-3 py-1 rounded-full flex items-center gap-1 shadow-md ${valueColor}`}
+        >
+          {valueBadge}
         </span>
       </div>
 
