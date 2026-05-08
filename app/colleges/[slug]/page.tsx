@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useCompare } from '@/context/CompareContext';
 import { useParams, useRouter } from 'next/navigation';
-import { School, MapPin, Trophy, IndianRupee, ArrowLeft, Plus, Check, Loader2 } from 'lucide-react';
+import { School, MapPin, Trophy, IndianRupee, ArrowLeft, Plus, Check, Loader2, Rocket, Briefcase, Award } from 'lucide-react';
 import Link from 'next/link';
 import CollegeCard from '@/components/colleges/CollegeCard';
 
@@ -156,8 +156,8 @@ export default function CollegeDetails() {
               onClick={() => isSelected ? removeFromCompare(college.id) : addToCompare(college)}
               disabled={!isSelected && isCompareFull}
               className={`px-8 py-4 rounded-2xl font-bold transition-all flex items-center gap-2 shadow-2xl ${isSelected
-                  ? 'bg-green-500 text-white'
-                  : 'bg-white text-slate-900 hover:bg-slate-100 disabled:opacity-50'
+                ? 'bg-green-500 text-white'
+                : 'bg-white text-slate-900 hover:bg-slate-100 disabled:opacity-50'
                 }`}
             >
               {isSelected ? (
@@ -207,86 +207,112 @@ export default function CollegeDetails() {
             </div>
           </div>
 
-          {/* Metric Cards */}
-          <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-6 border rounded-3xl bg-blue-50/50">
-              <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 mb-4">
-                <IndianRupee className="w-5 h-5" />
-              </div>
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Annual Fees</h3>
-              <p className="text-2xl font-black text-slate-800">₹{college.fees?.toLocaleString() || 'N/A'}</p>
-            </div>
-            <div className="p-6 border rounded-3xl bg-emerald-50/50">
-              <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 mb-4">
-                <Trophy className="w-5 h-5" />
-              </div>
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Median Placement</h3>
-              <div className="flex items-end justify-between mb-2">
-                <p className="text-2xl font-black text-slate-800">₹{college.median_package_lpa || ((1500000 - ((college.rank || 10) * 50000)) / 100000).toFixed(1)} LPA</p>
-                <span className="text-xs font-bold text-emerald-600">{college.placement_ratio || (98 - (college.rank || 10) * 0.5)}% Placed</span>
-              </div>
-              <div className="w-full h-1.5 bg-emerald-100 rounded-full overflow-hidden">
-                <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${college.placement_ratio || (98 - (college.rank || 10) * 0.5)}%` }} />
-              </div>
-            </div>
-            <div className="p-6 border rounded-3xl bg-purple-50/50">
-              <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600 mb-4">
-                <School className="w-5 h-5" />
-              </div>
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">ROI Factor</h3>
-              <div className="flex items-baseline gap-2">
-                <p className="text-2xl font-black text-slate-800">{college.fees ? (((college.median_package_lpa || ((1500000 - ((college.rank || 10) * 50000)) / 100000)) * 100000) / college.fees).toFixed(1) : 0}x</p>
-                <span className="text-xs font-medium text-slate-500">Return on Fees</span>
-              </div>
-            </div>
-          </section>
+
 
           {/* About Module */}
-          <section className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-            <h2 className="text-xl font-black mb-4 text-slate-800">Detailed About</h2>
-            <p className="text-slate-600 leading-loose text-sm md:text-base">
+          <section className="bg-white/80 dark:bg-slate-900/50 p-8 rounded-3xl border border-slate-200 dark:border-white/10 shadow-sm backdrop-blur-md">
+            <h2 className="text-xl font-black mb-4 text-slate-800 dark:text-slate-100">Detailed About</h2>
+
+            {/* Superpowers Badges */}
+            <div className="flex flex-wrap gap-3 mb-6">
+              {(college.superpowers || ['No Attendance Policy', 'Low Fees', 'Top Research Labs']).map((power: string, idx: number) => (
+                <span key={idx} className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-3 py-1 rounded-md text-xs font-black uppercase tracking-wider shadow-sm">
+                  {power}
+                </span>
+              ))}
+            </div>
+
+            <p className="text-slate-600 dark:text-slate-400 leading-loose text-sm md:text-base">
               {college.detailed_about || `${college.description} Recognized globally for research and academic excellence, this institution provides state-of-the-art facilities and a rigorous curriculum designed to foster innovation and leadership among its students. The campus spans over hundreds of acres, housing advanced laboratories, comprehensive libraries, and extensive sports complexes.`}
             </p>
           </section>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Infrastructure Chips */}
-            <section className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-              <h2 className="text-xl font-black mb-5 text-slate-800">Campus Facilities</h2>
+            <section className="bg-white/80 dark:bg-slate-900/50 p-8 rounded-3xl border border-slate-200 dark:border-white/10 shadow-sm backdrop-blur-md">
+              <h2 className="text-xl font-black mb-5 text-slate-800 dark:text-slate-100">Campus Facilities</h2>
               <div className="flex flex-wrap gap-2">
                 {(college.campus_facilities || ['High-Tech Labs', 'Central Library', 'Hostels', 'Sports Complex', 'Innovation Incubation Center', 'Wi-Fi Campus']).map((facility: string, idx: number) => (
-                  <span key={idx} className="bg-slate-50 border border-slate-200 text-slate-700 px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5">
+                  <span key={idx} className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5">
                     {facility}
                   </span>
                 ))}
               </div>
             </section>
 
-            {/* Notable Alumni */}
-            <section className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-              <h2 className="text-xl font-black mb-5 text-slate-800">Notable Alumni</h2>
-              <div className="space-y-3">
-                {(college.alumni_notable || [
-                  { name: 'Sundar Pichai', role: 'CEO, Alphabet Inc.' },
-                  { name: 'N. R. Narayana Murthy', role: 'Founder, Infosys' },
-                  { name: 'Raghuram Rajan', role: 'Former RBI Governor' }
-                ]).map((alumni: any, idx: number) => (
-                  <div key={idx} className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
-                    <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-lg">🎓</div>
-                    <div>
-                      <p className="text-sm font-bold text-slate-800">{alumni.name}</p>
-                      <p className="text-xs text-slate-500 font-medium">{alumni.role}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
           </div>
         </div>
 
-        <aside className="space-y-8">
+        <aside className="space-y-6 lg:sticky lg:top-24 h-max">
+          {/* Quick Stats (Moved from left column) */}
+          <div className="bg-white/80 dark:bg-slate-900/50 p-6 rounded-3xl border border-slate-200 dark:border-white/10 shadow-sm backdrop-blur-md">
+            <h3 className="text-lg font-black mb-4 text-slate-800 dark:text-slate-100">Quick Stats</h3>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center pb-4 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400">
+                    <IndianRupee className="w-4 h-4" />
+                  </div>
+                  <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Annual Fees</span>
+                </div>
+                <span className="font-bold text-slate-800 dark:text-slate-200">₹{college.fees?.toLocaleString() || 'N/A'}</span>
+              </div>
+              <div className="flex justify-between items-center pb-4 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                    <Trophy className="w-4 h-4" />
+                  </div>
+                  <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Median Package</span>
+                </div>
+                <span className="font-bold text-slate-800 dark:text-slate-200">₹{college.median_package_lpa || ((1500000 - ((college.rank || 10) * 50000)) / 100000).toFixed(1)} LPA</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center text-purple-600 dark:text-purple-400">
+                    <School className="w-4 h-4" />
+                  </div>
+                  <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Placement Ratio</span>
+                </div>
+                <span className="font-bold text-emerald-600">{college.placement_ratio || (98 - (college.rank || 10) * 0.5)}%</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Notable Alumni - Hall of Fame */}
+          <section className="bg-white/80 dark:bg-slate-900/50 p-6 rounded-3xl border border-slate-200 dark:border-white/10 shadow-sm backdrop-blur-md">
+            <h2 className="text-lg font-black mb-4 text-slate-800 dark:text-slate-100 flex items-center gap-2"> Hall of Fame</h2>
+            <div className="space-y-3">
+              {(college.alumni_notable || [
+                { name: 'Sundar Pichai', role: 'CEO, Alphabet Inc.' },
+                { name: 'N. R. Narayana Murthy', role: 'Founder, Infosys' },
+                { name: 'K. Sivan', role: 'Former ISRO Chairman' }
+              ]).map((alumni: any, idx: number) => {
+                let Icon = Award;
+                let iconBg = 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400';
+                const roleStr = alumni.role.toLowerCase();
+                if (roleStr.includes('isro') || roleStr.includes('nasa')) {
+                  Icon = Rocket;
+                  iconBg = 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400';
+                } else if (roleStr.includes('ceo') || roleStr.includes('founder')) {
+                  Icon = Briefcase;
+                  iconBg = 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400';
+                }
+                return (
+                  <div key={idx} className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${iconBg}`}>
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{alumni.name}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">{alumni.role}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
           {/* Eligibility Predictor */}
-          <div className="p-8 border rounded-3xl bg-gradient-to-br from-slate-900 to-blue-950 text-white shadow-xl shadow-slate-900/20">
+          <div className="p-8 border rounded-3xl bg-gradient-to-br from-slate-900 to-blue-950 dark:from-slate-800 dark:to-slate-900 text-white shadow-xl shadow-slate-900/20">
             <h3 className="text-xl font-black mb-2">Your Eligibility</h3>
             <p className="text-slate-400 text-sm mb-6">Enter your score to see your admission probability for {college.name}.</p>
 
@@ -296,11 +322,17 @@ export default function CollegeDetails() {
             />
           </div>
 
-          <div className="p-8 border rounded-3xl bg-blue-50 border-blue-100">
-            <h3 className="text-xl font-bold mb-2 text-blue-900">Need Guidance?</h3>
-            <p className="text-blue-700/80 text-sm mb-6">Talk to our admission consultants for a detailed roadmap to this institution.</p>
-            <button className="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-colors">
-              Book Free Session
+          <div className="p-8 border rounded-3xl bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800/30">
+            <h3 className="text-xl font-bold mb-2 text-blue-900 dark:text-blue-100">Decision Tools</h3>
+            <p className="text-blue-700/80 dark:text-blue-300/80 text-sm mb-6">Add this institution to your matrix to compare ROI, fees, and placement against other selections.</p>
+            <button
+              onClick={() => {
+                if (!isSelected && !isCompareFull) addToCompare(college);
+                router.push('/compare');
+              }}
+              className="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-colors flex justify-center items-center gap-2"
+            >
+              <Plus className="w-5 h-5" /> Compare Now
             </button>
           </div>
         </aside>

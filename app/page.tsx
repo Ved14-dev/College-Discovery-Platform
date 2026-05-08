@@ -20,9 +20,6 @@ export default function Home() {
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 max-w-4xl mx-auto">
-          <span className="inline-block bg-white/10 border border-white/20 text-blue-300 text-xs font-bold px-5 py-2 rounded-full mb-8 tracking-widest uppercase backdrop-blur-sm">
-            Track B · College Discovery Platform
-          </span>
 
           <h1 className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight tracking-tight">
             Discover Your{' '}

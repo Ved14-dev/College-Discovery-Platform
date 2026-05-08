@@ -2,19 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #f8fafc; /* slate-50 */
+    --foreground: #0f172a; /* slate-900 */
+    --card-bg: rgba(255, 255, 255, 0.8);
+    --card-border: rgba(255, 255, 255, 0.2);
+    --accent-primary: #4f46e5; /* indigo-600 */
+  }
+
+  .dark {
+    --background: #020617; /* slate-950 */
+    --foreground: #f8fafc; /* slate-50 */
+    --card-bg: rgba(15, 23, 42, 0.5); /* slate-900/50 */
+    --card-border: rgba(255, 255, 255, 0.1);
+    --accent-primary: #6366f1; /* indigo-500 */
+  }
+
+  body {
+    @apply bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300 antialiased;
+    font-family: 'Inter', 'Geist', system-ui, -apple-system, sans-serif;
+    background-image: radial-gradient(circle at top center, rgba(0,0,0,0.01) 0%, transparent 50%);
+  }
+  
+  .dark body {
+    background-image: radial-gradient(circle at top center, rgba(255,255,255,0.03) 0%, transparent 50%);
+  }
+
+  /* Accessibility Focus Rings */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-[var(--accent-primary)] ring-offset-2 ring-offset-[var(--background)];
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
+@layer components {
+  .glass-card {
+    @apply bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-[12px] shadow-xl rounded-2xl;
+  }
+}
+
+/* Shimmer Animation for Skeleton Loaders */
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
 }

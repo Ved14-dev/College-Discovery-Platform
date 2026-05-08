@@ -6,6 +6,9 @@ import CompareTray from "@/components/compare/CompareTray";
 
 import ShortlistCount from "@/components/ui/ShortlistCount";
 
+import { ThemeProvider } from "@/components/ui/ThemeProvider";
+import ThemeToggle from "@/components/ui/ThemeToggle";
+
 export const metadata: Metadata = {
   title: "EduQuest | College Discovery Platform",
   description: "Find and compare the best colleges with NIRF-verified rankings, live fee data, and AI-powered admission prediction.",
@@ -13,14 +16,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className="bg-white text-slate-900 antialiased"
+        className="bg-gray-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased transition-colors duration-300"
         style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}
       >
-        <CompareProvider>
-          {/* Fixed Glassmorphism Navbar — z-50 keeps it above all content */}
-          <header className="fixed top-0 w-full z-50 border-b border-slate-200/50 bg-white/70 backdrop-blur-md">
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <CompareProvider>
+            <ThemeToggle />
+            {/* Fixed Glassmorphism Navbar — z-50 keeps it above all content */}
+            <header className="fixed top-0 w-full z-50 border-b border-slate-200/50 dark:border-slate-800/50 bg-white/80 dark:bg-slate-900/50 backdrop-blur-md">
             <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
               {/* Brand */}
               <Link href="/" className="flex items-center gap-2.5 group">
@@ -55,6 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main className="pt-16">{children}</main>
           <CompareTray />
         </CompareProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -81,14 +81,16 @@ export default function CollegeDirectory() {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="border border-slate-200 rounded-2xl bg-white shadow-sm h-72 flex flex-col overflow-hidden">
-                <div className="h-44 bg-slate-200 animate-pulse w-full" />
+              <div key={i} className="border border-slate-200 dark:border-white/10 rounded-2xl bg-white dark:bg-slate-900/50 shadow-sm h-72 flex flex-col overflow-hidden relative">
+                {/* Shimmer overlay */}
+                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 dark:via-white/10 to-transparent" />
+                <div className="h-44 bg-slate-200 dark:bg-slate-800 animate-pulse w-full" />
                 <div className="p-5 flex flex-col flex-grow gap-3">
-                  <div className="h-5 bg-slate-200 rounded animate-pulse w-3/4" />
-                  <div className="h-3 bg-slate-200 rounded animate-pulse w-1/2" />
+                  <div className="h-5 bg-slate-200 dark:bg-slate-800 rounded animate-pulse w-3/4" />
+                  <div className="h-3 bg-slate-200 dark:bg-slate-800 rounded animate-pulse w-1/2" />
                   <div className="mt-auto flex justify-between">
-                    <div className="h-4 bg-slate-200 rounded animate-pulse w-1/3" />
-                    <div className="w-9 h-9 bg-slate-200 rounded-xl animate-pulse" />
+                    <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded animate-pulse w-1/3" />
+                    <div className="w-9 h-9 bg-slate-200 dark:bg-slate-800 rounded-xl animate-pulse" />
                   </div>
                 </div>
               </div>
@@ -101,8 +103,8 @@ export default function CollegeDirectory() {
               {search && <> for "<span className="text-blue-600">{search}</span>"</>}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {colleges.map((college) => (
-                <CollegeCard key={college.id} college={college} />
+              {colleges.map((college, idx) => (
+                <CollegeCard key={college.id} college={college} index={idx} />
               ))}
             </div>
           </>
