@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EduQuest: College Discovery Platform
 
-## Getting Started
+EduQuest is a comprehensive platform designed to help students discover, compare, and predict their admission chances for top Indian engineering and science institutions. Built for speed and accuracy, the platform utilizes a weighted AI probability model to provide realistic admission insights.
 
-First, run the development server:
+## Core Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+* **Smart College Directory:** Searchable database of top-tier institutions with real-time filtering by name and location.
+* **Multi-Factor AI Predictor:** An admission probability engine that considers entrance scores, reservation categories, and branch preferences.
+* **Technical Comparison:** Side-by-side analysis of fees, rankings, and campus facilities.
+* **Verified Data:** Integrated with Supabase to provide realistic fee structures and NIRF-aligned rankings for 2026-27.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+* **Frontend:** Next.js 15 (App Router), Tailwind CSS
+* **Backend:** Supabase (PostgreSQL, Row Level Security)
+* **Deployment:** Vercel
+* **Architecture:** Optimized for high performance and low memory footprints.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Technical Problem Solving
 
-## Learn More
+During development, the project was optimized to run on a 32-bit Windows environment. This required:
+* Custom Webpack configurations to manage memory allocation.
+* Strict adherence to CSS-based animations to reduce JavaScript main-thread execution.
+* Efficient data fetching patterns to prevent ArrayBuffer overflows in limited-memory environments.
 
-To learn more about Next.js, take a look at the following resources:
+## Local Setup
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Clone the repository.
+2. Install dependencies:
+   ```bash
+   npm install
